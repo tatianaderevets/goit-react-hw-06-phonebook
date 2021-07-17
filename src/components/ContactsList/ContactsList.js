@@ -1,0 +1,48 @@
+import React from "react";
+import { connect } from 'react-redux';
+import contactsActions from '../../redux/contacts/contacts-actions';
+import PropTypes from 'prop-types';
+
+const ContactsList = ({ contacts, onDeleteContacts }) => (
+    
+    <ul>{contacts.map(({ id, name, number }) => (
+        <li key={id}>
+            <p>{name}:{number}</p>
+            <button onClick={() => onDeleteContacts(id)}>Delete</button>
+        </li>
+    ))}
+            
+    </ul>
+);
+
+ContactsList.propTypes = {
+    contacts: PropTypes.array.isRequired,
+    onDeleteContacts: PropTypes.func.isRequired
+}
+
+const getVisibleContacts = (allContacts, filter) => {
+    const normalizedFilter = filter.toLowerCase();
+
+    return allContacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter));
+  }
+
+
+// const mapStateToProps = (state) => {
+//     const { filter, items } = state.contacts;
+//     const visibleContacts = getVisibleContacts(items, filter)
+
+//     return {
+//     contacts: visibleContacts,
+//     }
+// }
+
+const mapStateToProps = ({ contacts: { items, filter } }) => ({
+    contacts: getVisibleContacts(items, filter),
+});
+
+const mapDispatchToProps = dispatch =>( {
+onDeleteContacts: (id) => dispatch(contactsActions.deleteContact(id)),
+})
+ 
+
+export default connect(mapStateToProps, mapDispatchToProps )(ContactsList);
